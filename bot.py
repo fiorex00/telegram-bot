@@ -10,30 +10,43 @@ app = Flask(__name__)
 
 WELCOME_MESSAGE = "Ciao 👋"
 
+def log(*args):
+    print(*args, flush=True)
+
 def tg(method, data):
     r = requests.post(f"{BASE_URL}/{method}", json=data, timeout=20)
-    print("METHOD:", method)
-    print("DATA:", data)
-    print("STATUS:", r.status_code)
-    print("RESPONSE:", r.text)
+    log("METHOD:", method)
+    log("DATA:", data)
+    log("STATUS:", r.status_code)
+    log("RESPONSE:", r.text)
     r.raise_for_status()
     return r.json()
 
 @app.route("/", methods=["GET"])
 def home():
+    log("HOME OK")
     return "ok", 200
+
+@app.route("/test", methods=["GET"])
+def test():
+    log("TEST OK")
+    return "test ok", 200
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    secret = request.headers.get("X-Telegram-Bot-Api-Secret-Token")
-    if secret != SECRET:
+    log("WEBHOOK HIT")
+
+    header_secret = request.headers.get("X-Telegram-Bot-Api-Secret-Token")
+    log("HEADER SECRET:", header_secret)
+
+    if header_secret != SECRET:
+        log("SECRET NON VALIDO")
         abort(403)
 
     update = request.get_json(silent=True) or {}
-    print("UPDATE:", update)
+    log("UPDATE:", update)
 
     join_request = update.get("chat_join_request")
-
     if join_request:
         chat_id = join_request["chat"]["id"]
         user_id = join_request["from"]["id"]
@@ -45,7 +58,7 @@ def webhook():
                 "text": WELCOME_MESSAGE
             })
         except Exception as e:
-            print("Errore invio messaggio:", e)
+            log("ERRORE INVIO MESSAGGIO:", e)
 
         try:
             tg("approveChatJoinRequest", {
@@ -53,6 +66,6 @@ def webhook():
                 "user_id": user_id
             })
         except Exception as e:
-            print("Errore approvazione:", e)
+            log("ERRORE APPROVAZIONE:", e)
 
     return "ok", 200
