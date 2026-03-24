@@ -9,9 +9,11 @@ BASE_URL = f"https://api.telegram.org/bot{TOKEN}"
 app = Flask(__name__)
 
 WELCOME_MESSAGE = (
-    "Ciao 👋\n"
-    "Ti ho appena approvato l'accesso al canale.\n"
-    "Benvenuto."
+    "Ciao bello 😘\n\n"
+    "benvenuto nel mio canale Telegram.\n\n"
+    "Qui pubblico solo una parte…\n"
+    "se vuoi vedermi davvero (e gratis), entra qui:\n"
+    "https://onlyfans.com/lucreziaboratti/c15"
 )
 
 def tg(method, data):
