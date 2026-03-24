@@ -10,12 +10,11 @@ app = Flask(__name__)
 
 WELCOME_MESSAGE = (
     "Ciao bello 😘\n\n"
-    "benvenuto nel mio canale Telegram.\n\n"
-    "Se vuoi vedermi meglio (e gratis), entra qui:\n"
-    "https://onlyfans.com/lucreziaboratti/c15"
+    "Benvenuto nel mio canale Telegram ❤️\n\n"
 )
 
 IMAGE_URL = "https://i.imgur.com/9PGTprq.jpeg"
+BUTTON_URL = "https://onlyfans.com/lucreziaboratti/c15"
 
 def tg(method, data):
     r = requests.post(f"{BASE_URL}/{method}", json=data, timeout=20)
@@ -45,17 +44,27 @@ def webhook():
         user_id = join_request["from"]["id"]
         user_chat_id = join_request["user_chat_id"]
 
-        # invia immagine + testo
+        # invia immagine + testo + bottone
         try:
             tg("sendPhoto", {
                 "chat_id": user_chat_id,
                 "photo": IMAGE_URL,
-                "caption": WELCOME_MESSAGE
+                "caption": WELCOME_MESSAGE,
+                "reply_markup": {
+                    "inline_keyboard": [
+                        [
+                            {
+                                "text": "clicca qui 😜",
+                                "url": BUTTON_URL
+                            }
+                        ]
+                    ]
+                }
             })
         except Exception as e:
             print("Errore invio messaggio:", e, flush=True)
 
-        # approva richiesta
+        # approva la richiesta
         try:
             tg("approveChatJoinRequest", {
                 "chat_id": chat_id,
