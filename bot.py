@@ -8,43 +8,36 @@ BASE_URL = f"https://api.telegram.org/bot{TOKEN}"
 
 app = Flask(__name__)
 
-WELCOME_MESSAGE = "Ciao 👋"
+WELCOME_MESSAGE = (
+    "Ciao bello 😘\n\n"
+    "benvenuto nel mio canale Telegram.\n\n"
+    "Se vuoi vedermi meglio (e gratis), entra qui:\n"
+    "https://onlyfans.com/lucreziaboratti/c15"
+)
 
-def log(*args):
-    print(*args, flush=True)
+IMAGE_URL = "https://i.imgur.com/9PGTprq.jpeg"
 
 def tg(method, data):
     r = requests.post(f"{BASE_URL}/{method}", json=data, timeout=20)
-    log("METHOD:", method)
-    log("DATA:", data)
-    log("STATUS:", r.status_code)
-    log("RESPONSE:", r.text)
+    print("METHOD:", method, flush=True)
+    print("DATA:", data, flush=True)
+    print("STATUS:", r.status_code, flush=True)
+    print("RESPONSE:", r.text, flush=True)
     r.raise_for_status()
     return r.json()
 
 @app.route("/", methods=["GET"])
 def home():
-    log("HOME OK")
     return "ok", 200
-
-@app.route("/test", methods=["GET"])
-def test():
-    log("TEST OK")
-    return "test ok", 200
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    log("WEBHOOK HIT")
-
     header_secret = request.headers.get("X-Telegram-Bot-Api-Secret-Token")
-    log("HEADER SECRET:", header_secret)
-
     if header_secret != SECRET:
-        log("SECRET NON VALIDO")
         abort(403)
 
     update = request.get_json(silent=True) or {}
-    log("UPDATE:", update)
+    print("UPDATE:", update, flush=True)
 
     join_request = update.get("chat_join_request")
     if join_request:
@@ -52,20 +45,23 @@ def webhook():
         user_id = join_request["from"]["id"]
         user_chat_id = join_request["user_chat_id"]
 
+        # invia immagine + testo
         try:
-            tg("sendMessage", {
+            tg("sendPhoto", {
                 "chat_id": user_chat_id,
-                "text": WELCOME_MESSAGE
+                "photo": IMAGE_URL,
+                "caption": WELCOME_MESSAGE
             })
         except Exception as e:
-            log("ERRORE INVIO MESSAGGIO:", e)
+            print("Errore invio messaggio:", e, flush=True)
 
+        # approva richiesta
         try:
             tg("approveChatJoinRequest", {
                 "chat_id": chat_id,
                 "user_id": user_id
             })
         except Exception as e:
-            log("ERRORE APPROVAZIONE:", e)
+            print("Errore approvazione:", e, flush=True)
 
     return "ok", 200
