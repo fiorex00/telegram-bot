@@ -2,18 +2,17 @@ import os
 import requests
 from flask import Flask, request, abort
 
+# prende i dati da Render
 TOKEN = os.environ["BOT_TOKEN"]
 SECRET = os.environ["SECRET_TOKEN"]
 BASE_URL = f"https://api.telegram.org/bot{TOKEN}"
 
 app = Flask(__name__)
 
-WELCOME_MESSAGE = (
-    "Ciao bello 😘\n\n"
-    "Benvenuto nel mio canale Telegram ❤️\n\n"
-)
+# immagine
+IMAGE_URL = "https://i.postimg.cc/52QtwC6P/Picsart-26-01-29-14-48-17-486(1).jpg"
 
-IMAGE_URL = "https://i.imgur.com/9PGTprq.jpeg"
+# link del bottone
 BUTTON_URL = "https://onlyfans.com/lucreziaboratti/c15"
 
 def tg(method, data):
@@ -39,22 +38,30 @@ def webhook():
     print("UPDATE:", update, flush=True)
 
     join_request = update.get("chat_join_request")
+
     if join_request:
         chat_id = join_request["chat"]["id"]
         user_id = join_request["from"]["id"]
         user_chat_id = join_request["user_chat_id"]
 
-        # invia immagine + testo + bottone
+        user_name = join_request["from"].get("first_name", "amore")
+
+        welcome_message = (
+            f"Ciao {user_name} 😘\n\n"
+            "Benvenuto nel mio canale Telegram ❤️ .\n\n"
+        )
+
+        # invia immagine + testo sotto + bottone
         try:
             tg("sendPhoto", {
                 "chat_id": user_chat_id,
                 "photo": IMAGE_URL,
-                "caption": WELCOME_MESSAGE,
+                "caption": welcome_message,
                 "reply_markup": {
                     "inline_keyboard": [
                         [
                             {
-                                "text": "clicca qui 😜",
+                                "text": "👉 CLICCA QUI 👈",
                                 "url": BUTTON_URL
                             }
                         ]
@@ -64,7 +71,7 @@ def webhook():
         except Exception as e:
             print("Errore invio messaggio:", e, flush=True)
 
-        # approva la richiesta
+        # approva automaticamente la richiesta
         try:
             tg("approveChatJoinRequest", {
                 "chat_id": chat_id,
