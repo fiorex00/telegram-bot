@@ -47,8 +47,8 @@ def webhook():
         user_name = join_request["from"].get("first_name", "amore")
 
         welcome_message = (
-            f"Ciao {user_name} 😘\n\n"
-            "Benvenuto nel mio canale Telegram ❤️ .\n\n"
+            f"Ei {user_name} ho una voglia assurda di divertirmi con te 🔞❤️\n\n"
+            "Non fare il timido e entra qui sotto se vuoi sborrare 😉\n\n"
         )
 
         # invia immagine + testo sotto + bottone
