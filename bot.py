@@ -48,7 +48,7 @@ def webhook():
 
         welcome_message = (
             f"Ei {user_name} ho una voglia assurda di divertirmi con te 🔞❤️\n\n"
-            "Non fare il timido e entra qui sotto se vuoi sborrare 😉\n\n"
+            "Non fare il timido e entra qui sotto se vuoi sborrare, mando una foto gratis ai primi 5 che mi scrivono 😉\n\n"
         )
 
         # invia immagine + testo sotto + bottone
